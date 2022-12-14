@@ -99,6 +99,6 @@ public class CarController : MonoBehaviour
     private void OnDrawGizmos()
     {
         //rb.centerOfMass = collider.center;
-        Gizmos.DrawSphere(rb.worldCenterOfMass, 1);
+        //Gizmos.DrawSphere(rb.worldCenterOfMass, 1);
     }
 }
