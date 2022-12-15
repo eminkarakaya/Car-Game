@@ -4,13 +4,13 @@ using UnityEngine;
 using TMPro;
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] private SelectedCar selectedCar;
     [SerializeField] private GameObject startTouch;
     public bool isStart;
     public static GameManager instance;
     [SerializeField] private TextMeshProUGUI _goldText;
-    [SerializeField] private int _gold,selectedCar;
+    [SerializeField] private int _gold;
     [SerializeField] private GameObject[] cars;
-
     private void Awake()
     {
         GameManager[] managers = GameObject.FindObjectsOfType<GameManager>();
@@ -22,8 +22,9 @@ public class GameManager : MonoBehaviour
 
         DontDestroyOnLoad(this.gameObject);
         instance = this;
+        Instantiate(cars[selectedCar.selectedCar], transform.position, Quaternion.identity);
     }
-    
+
     private void Update()
     {
         if(Input.GetMouseButton(0))

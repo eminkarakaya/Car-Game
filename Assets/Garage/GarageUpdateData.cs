@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using DG.Tweening;
 using TMPro;
 using UnityEngine.UI;
@@ -9,12 +10,15 @@ public class GarageUpdateData : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI carNameText;
     [SerializeField] private Slider speedSlider, boostedSpeedSlider, horizontalSpeedSlider, accelerationSpeedSlider;
+    [SerializeField] private GameObject selectedImage;
+    [SerializeField] private GameObject selectButton,goButton;
 
     [Header("UI Data")]
     [SerializeField] private float speedMaxValue;
     [SerializeField] private float boostedSpeedMaxValue, horizontalSpeedMaxValue, accelerationSpeedMaxValue;
     [Space(20)]
 
+    [SerializeField] private SelectedCar selectedCar;
     [SerializeField] private float spaceBetweenCars;
     [SerializeField] private float animationDuration;
     [SerializeField] private Transform cameraAndLight;
@@ -40,9 +44,16 @@ public class GarageUpdateData : MonoBehaviour
             Right();
         }
     }
+    public void GOButton()
+    {
+        SceneManager.LoadScene(1);
+    }
     public void SelectCar()
     {
-
+        selectedCar.selectedCar = currentCar;
+        selectButton.SetActive(false);
+        goButton.SetActive(true);
+        selectedImage.SetActive(true);
     }
     public void UpdateCarData()
     {
@@ -63,15 +74,40 @@ public class GarageUpdateData : MonoBehaviour
             currentCar--;
             cameraAndLight.transform.DOMoveX(-currentCar * spaceBetweenCars, animationDuration);
             UpdateCarData();
+            if (selectedCar.selectedCar == currentCar)
+            {
+                selectButton.SetActive(false);
+                goButton.SetActive(true);
+                selectedImage.SetActive(true);
+            }
+            else
+            {
+                selectButton.SetActive(true);
+                goButton.SetActive(false);
+                selectedImage.SetActive(false);
+            }
         }
     }
     private void Right()
     {
         if(currentCar < data.Length-1)
         {
+
             currentCar++;
             cameraAndLight.transform.DOMoveX(-currentCar * spaceBetweenCars, animationDuration);
             UpdateCarData();
+            if (selectedCar.selectedCar == currentCar)
+            {
+                selectButton.SetActive(false);
+                goButton.SetActive(true);
+                selectedImage.SetActive(true);
+            }
+            else
+            {
+                selectButton.SetActive(true);
+                goButton.SetActive(false);
+                selectedImage.SetActive(false);
+            }
         }
     }
 }

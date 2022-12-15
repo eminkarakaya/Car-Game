@@ -12,7 +12,11 @@ public class CameraFollow : MonoBehaviour
     {
         instance = this;
     }
-    private void Update()
+    private void Start()
+    {
+        followObject = GameObject.FindGameObjectWithTag("Player");
+    }
+    private void LateUpdate()
     {
         Follow();
     }
