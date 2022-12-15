@@ -18,7 +18,7 @@ public class CameraFollow : MonoBehaviour
     }
     void Follow()
     {
-        transform.position = Vector3.Lerp(new Vector3(0, transform.position.y,transform.position.z), followObject.transform.position + offset, .125f);
+        transform.position = Vector3.Lerp(new Vector3(0, transform.position.y,transform.position.z), new Vector3(0,followObject.transform.position.y, followObject.transform.position.z) + offset, .75f);
     }
     public void WinAnim(Transform _transform)
     {

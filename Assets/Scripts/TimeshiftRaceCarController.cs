@@ -3,53 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 public class TimeshiftRaceCarController : MonoBehaviour
 {
-    bool boost;
-    Rigidbody rb;
-    [SerializeField] private float maxSpeed,horizontalSpeed,rotationMultiplier,boostedMaxSpeed, speed;
-    [SerializeField] private float accelerationSpeed, decelerationSpeed;
-    float tempMaxSpeed,boostDuration;
+    [SerializeField] CarData data;
+    [SerializeField] private float maxSpeed,rotationMultiplier, speed;
+    float tempMaxSpeed;
     private const string HORIZONTAL = "Horizontal";
     private void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        maxSpeed = data.maxSpeed;
     }
     private void Update()
     {
+        if (!GameManager.instance.isStart)
+            return;
         if (speed < maxSpeed)
         {
-            speed += Time.deltaTime * accelerationSpeed;
+            speed += Time.deltaTime * data.accelerationSpeed;
         }
         else
         {
             if (speed > 0)
             {
-                speed -= Time.deltaTime * decelerationSpeed;
+                speed -= Time.deltaTime * data.decelerationSpeed;
             }
         }
         Vector3 rot = Vector3.forward * Input.GetAxis(HORIZONTAL) * rotationMultiplier;
         transform.rotation = Quaternion.Euler(rot);
-        transform.Translate(Vector3.right * Time.deltaTime * Input.GetAxis(HORIZONTAL)*horizontalSpeed);
+        transform.Translate(Vector3.right * Time.deltaTime * Input.GetAxis(HORIZONTAL)*data.horizontalSpeed);
         transform.Translate(Vector3.forward * Time.deltaTime * speed);
     }
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.tag == "Speed")
         {
-            StopAllCoroutines();
-            StartCoroutine(Boost());
+            Boost();
         }
     }
-    //private void Boost()
-    //{
-    //    tempMaxSpeed = maxSpeed;
-    //    maxSpeed = boostedMaxSpeed;
-    //}
-    private IEnumerator Boost()
+    private void Boost()
     {
-        tempMaxSpeed = maxSpeed;
-        maxSpeed = boostedMaxSpeed;
-        speed = boostedMaxSpeed;
-        yield return new WaitForSeconds(boostDuration);
-        maxSpeed = tempMaxSpeed;
+        speed = data.boostedMaxSpeed;
     }
 }
