@@ -7,11 +7,19 @@ using TMPro;
 using UnityEngine.UI;
 public class GarageUpdateData : MonoBehaviour
 {
+    [SerializeField] private Material[] carMaterials;
+    [SerializeField] private Material lockMaterial;
+    // input
+    private Vector2 startPos;
+    private int pixelDistToDetect = 100;
+    private bool fingerDown;
+    //
+    [SerializeField] private LevelData levelData;
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI carNameText;
     [SerializeField] private Slider speedSlider, boostedSpeedSlider, horizontalSpeedSlider, accelerationSpeedSlider;
-    [SerializeField] private GameObject selectedImage;
-    [SerializeField] private GameObject selectButton,goButton;
+    [SerializeField] private GameObject selectedImage,lockImage;
+    [SerializeField] private GameObject selectButton, goButton, buyButton;
 
     [Header("UI Data")]
     [SerializeField] private float speedMaxValue;
@@ -23,6 +31,7 @@ public class GarageUpdateData : MonoBehaviour
     [SerializeField] private float animationDuration;
     [SerializeField] private Transform cameraAndLight;
     [SerializeField] private CarData [] data;
+    [SerializeField] private CarLockData[] lockData;
     [SerializeField] private int currentCar = 0;
     private void Start()
     {
@@ -30,23 +39,66 @@ public class GarageUpdateData : MonoBehaviour
         boostedSpeedSlider.maxValue = boostedSpeedMaxValue;
         horizontalSpeedSlider.maxValue = horizontalSpeedMaxValue;
         accelerationSpeedSlider.maxValue = accelerationSpeedMaxValue;
-
+        for (int i = 0; i < lockData.Length; i++)
+        {
+            if (!data[i].isLocked)
+            {
+                lockData[i].lockedObject.SetActive(false);
+                lockData[i].unlockedObject.SetActive(true);
+            }
+            else
+            {
+                lockData[i].lockedObject.SetActive(true);
+                lockData[i].unlockedObject.SetActive(false);
+            }
+        }
         UpdateCarData();
+        if (selectedCar.selectedCar == currentCar)
+        {
+            selectButton.SetActive(false);
+            goButton.SetActive(true);
+            selectedImage.SetActive(true);
+        }
+        else
+        {
+            selectButton.SetActive(true);
+            goButton.SetActive(false);
+            selectedImage.SetActive(false);
+        }
     }
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.A))
+        if (Input.touchCount == 0)
+            return;
+        if(fingerDown == false)
         {
-            Left();
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Began)
+            {
+                startPos = touch.position;
+                fingerDown = true;
+            }
+
         }
-        else if(Input.GetKeyDown(KeyCode.D))
+        if (fingerDown)
         {
-            Right();
+            if(Input.GetTouch(0).position.x >= startPos.x + pixelDistToDetect)
+            {
+                fingerDown = false;
+                // left swipe
+                Left();
+            }
+            else if (Input.GetTouch(0).position.x <= startPos.x - pixelDistToDetect)
+            {
+                // right swipe
+                fingerDown = false;
+                Right();
+            }
         }
     }
     public void GOButton()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(levelData.level);
     }
     public void SelectCar()
     {
@@ -54,6 +106,17 @@ public class GarageUpdateData : MonoBehaviour
         selectButton.SetActive(false);
         goButton.SetActive(true);
         selectedImage.SetActive(true);
+    }
+    public void CheckLock()
+    {
+        if(!data[currentCar].isLocked)
+        {
+            lockImage.SetActive(true);
+        }
+        else
+        {
+            lockImage.SetActive(false);
+        }
     }
     public void UpdateCarData()
     {
@@ -74,18 +137,15 @@ public class GarageUpdateData : MonoBehaviour
             currentCar--;
             cameraAndLight.transform.DOMoveX(-currentCar * spaceBetweenCars, animationDuration);
             UpdateCarData();
-            if (selectedCar.selectedCar == currentCar)
+            if(data[currentCar].isLocked)
             {
+                buyButton.SetActive(true);
                 selectButton.SetActive(false);
-                goButton.SetActive(true);
-                selectedImage.SetActive(true);
-            }
-            else
-            {
-                selectButton.SetActive(true);
                 goButton.SetActive(false);
                 selectedImage.SetActive(false);
+                return;
             }
+            CheckSelected();
         }
     }
     private void Right()
@@ -96,18 +156,45 @@ public class GarageUpdateData : MonoBehaviour
             currentCar++;
             cameraAndLight.transform.DOMoveX(-currentCar * spaceBetweenCars, animationDuration);
             UpdateCarData();
-            if (selectedCar.selectedCar == currentCar)
+            if (data[currentCar].isLocked)
             {
+                buyButton.SetActive(true);
                 selectButton.SetActive(false);
-                goButton.SetActive(true);
-                selectedImage.SetActive(true);
-            }
-            else
-            {
-                selectButton.SetActive(true);
                 goButton.SetActive(false);
                 selectedImage.SetActive(false);
+                return;
             }
+            CheckSelected();
         }
     }
+    public void CheckSelected()
+    {
+        if (selectedCar.selectedCar == currentCar)
+        {
+            buyButton.SetActive(false);
+            selectButton.SetActive(false);
+            goButton.SetActive(true);
+            selectedImage.SetActive(true);
+        }
+        else
+        {
+            buyButton.SetActive(false);
+            selectButton.SetActive(true);
+            goButton.SetActive(false);
+            selectedImage.SetActive(false);
+        }
+    }
+    public void Unlock()
+    {
+        data[currentCar].isLocked = false;
+        lockData[currentCar].unlockedObject.SetActive(true);
+        lockData[currentCar].lockedObject.SetActive(false);
+        lockImage.SetActive(false);
+        CheckSelected();
+    }
+}
+[System.Serializable] 
+public struct CarLockData
+{
+    public GameObject unlockedObject, lockedObject;
 }

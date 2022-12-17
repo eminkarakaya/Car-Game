@@ -1,104 +1,180 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-[RequireComponent(typeof(Rigidbody))]
 public class CarController : MonoBehaviour
 {
-    [SerializeField] Rigidbody rb;
-    [SerializeField] BoxCollider collider;
-    private const string HORIZONTAL = "Horizontal";
-    private const string VERTICAL = "Vertical";
-    private float currentSteerAngle;
-    private float horizontalInput;
-    private float verticalInput;
-    [SerializeField] private float speedMultiplier;
-    [SerializeField] private float currentBreakForce;
-    [SerializeField] private bool isBreaking;
-    [SerializeField] private float maxSteerAngle;
-    [SerializeField] private float motorForce;
-    [SerializeField] private float breakForce;
-    [SerializeField] private WheelCollider frontLeftWheelCollider;
-    [SerializeField] private WheelCollider frontRightWheelCollider;
-    [SerializeField] private WheelCollider rearLeftWheelCollider;
-    [SerializeField] private WheelCollider rearRightWheelCollider;
+    [SerializeField] private Transform _backOfCar;
+    MeshRenderer [] meshRenderers;
+    public bool isFinish;
+    public static CarController instance;
+    public static event System.Action OnFinish;
+    public LevelController levelController;
+    bool kazaYaptiMi;
+    bool dokunulmazMi;
+    public bool specialFinish;
+    [SerializeField] private int unTouchableLayerIndex, defaultLayerIndex;
+    [SerializeField] private LayerMask layer;
+    [SerializeField] CarData data;
+    [SerializeField] private float maxSpeed,rotationMultiplier, speed,rayLength,reviveDistance,reviveDuration,unTouchableDuration;
+    Rigidbody rb;
+    public float horizontalData;
+    private void Awake()
+    {
+        instance = this;
+    }
     
-    [SerializeField] private Transform frontLeftWheelTransform;
-    [SerializeField] private Transform frontRightWheelTransform;
-    [SerializeField] private Transform rearLeftWheelTransform;
-    [SerializeField] private Transform rearRightWheelTransform;
     private void Start()
     {
+        levelController = FindObjectOfType<LevelController>();
+        meshRenderers = GetComponentsInChildren<MeshRenderer>();
         rb = GetComponent<Rigidbody>();
-        
+        maxSpeed = data.maxSpeed;
     }
+    
     private void FixedUpdate()
     {
-        GetInput();
-        HandleMotor();
-        HandleSteering();
-        UpdateWheels();
-    }
-    private void GetInput()
-    {
-        horizontalInput = Input.GetAxis(HORIZONTAL);
-        verticalInput = Input.GetAxis(VERTICAL);
-        isBreaking = Input.GetKey(KeyCode.Space);
-    }
-    private void HandleMotor()
-    {
-        frontLeftWheelCollider.motorTorque = verticalInput * motorForce;
-        frontRightWheelCollider.motorTorque = verticalInput * motorForce;
+        if (!levelController.isStart || isFinish)
+            return;
+        HorizontalMove();
+       
+        rb.velocity = new Vector3(0, rb.velocity.y, rb.velocity.z);
         
-        //currentBreakForce = isBreaking ? breakForce : 0f;
-
-        if (isBreaking)
+        if (rb.velocity.z < maxSpeed)
         {
-            currentBreakForce = breakForce;
+            rb.velocity += new Vector3(0, 0, Time.deltaTime * data.accelerationSpeed);
         }
         else
-            currentBreakForce = 0;
-        ApplyBreaking();
+        {
+            if (rb.velocity.z > 0)
+            {
+                rb.velocity -= new Vector3(0, 0, Time.deltaTime * data.accelerationSpeed);
+            }
+        }
+        rb.angularVelocity = Vector3.zero;
     }
-    private void ApplyBreaking()
+    public void HorizontalMove()
     {
-        //Debug.Log(frontLeftWheelCollider.brakeTorque);
-        frontLeftWheelCollider.brakeTorque = currentBreakForce;
-        frontRightWheelCollider.brakeTorque = currentBreakForce;
-        rearLeftWheelCollider.brakeTorque = currentBreakForce;
-        rearRightWheelCollider.brakeTorque = currentBreakForce;
+        Vector3 rot = Vector3.forward * rotationMultiplier * (rb.velocity.z / maxSpeed) * horizontalData;
+        transform.rotation = Quaternion.Euler(rot);
+        transform.Translate(Vector3.right * Time.deltaTime * data.horizontalSpeed * (rb.velocity.z / maxSpeed) * horizontalData * 1.3f);
     }
-    private void HandleSteering()
+    private IEnumerator Revive()
     {
-        currentSteerAngle = maxSteerAngle * horizontalInput;
-        frontLeftWheelCollider.steerAngle = currentSteerAngle;
-        frontRightWheelCollider.steerAngle = currentSteerAngle;
+        if(!kazaYaptiMi)
+        {
+                kazaYaptiMi = true;
+            //rb.velocity = Vector3.zero;
+            Vector3 revivePos = transform.position + Vector3.back * reviveDistance;
+            yield return new WaitForSeconds(reviveDuration);
+            transform.rotation = Quaternion.Euler(Vector3.zero);
+            kazaYaptiMi = false;
+            transform.position = revivePos;
+            StartCoroutine(UnTouchable());
+        }
     }
-    private void UpdateWheels()
+    private IEnumerator UnTouchable()
     {
-        UpdateSingleWheel(frontLeftWheelCollider, frontLeftWheelTransform);
-        UpdateSingleWheel(frontRightWheelCollider, frontRightWheelTransform);
-        UpdateSingleWheel(rearLeftWheelCollider, rearLeftWheelTransform);
-        UpdateSingleWheel(rearRightWheelCollider, rearRightWheelTransform);
-    }
-    private void UpdateSingleWheel(WheelCollider wheelCollider,Transform wheelTransfrom)
-    {
-        Vector3 pos;
-        Quaternion rot;
-        wheelCollider.GetWorldPose(out pos, out rot);
-        wheelTransfrom.rotation = rot;
-        wheelTransfrom.position = pos;
+        if(!dokunulmazMi)
+        {
+            rb.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationX;
+            
+            StartCoroutine(MaterialToggle());
+            dokunulmazMi = true;
+            gameObject.layer = unTouchableLayerIndex;
+            yield return new WaitForSeconds(unTouchableDuration);
+            dokunulmazMi = false;
+            gameObject.layer = default;
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Speed")
+        if(other.gameObject.tag == "Obstacle")
         {
-            rb.velocity += transform.forward * speedMultiplier;
+            //CrashEffect2(other.transform);
+            CrashEffect();
+            StartCoroutine(Revive());
+        }
+        if(other.gameObject.tag == "Speed")
+        {
+            rb.velocity = new Vector3(0, rb.velocity.y, data.boostedMaxSpeed);
+        }
+        if(other.gameObject.tag =="Finish")
+        {
+            OnFinish?.Invoke();
+            isFinish = true;
+        }
+        if(other.gameObject.tag == "Object")
+        {
+            other.GetComponent<Rigidbody>().AddForce((other.transform.position - transform.position).normalized * rb.velocity.z * 3);
         }
     }
-    private void OnDrawGizmos()
+    public void SpecialFinish()
     {
-        //rb.centerOfMass = collider.center;
-        //Gizmos.DrawSphere(rb.worldCenterOfMass, 1);
+        if(specialFinish)
+        {
+            specialFinish = false;
+        }
     }
+    void CrashEffect2(Transform target)
+    {
+        rb.AddForce(transform.position - target.position * 100 * rb.velocity.z);
+    }
+    void CrashEffect()
+    {
+        rb.constraints = RigidbodyConstraints.None;
+        rb.AddExplosionForce(1000 * rb.velocity.z,_backOfCar.position,.3f);
+        
+    }
+    IEnumerator MaterialToggle()
+    {
+        var tempToplam = 0f;
+        var temp = 0f;
+
+        bool open = true;
+
+        while(tempToplam < unTouchableDuration)
+        {
+            yield return null;
+            tempToplam += Time.deltaTime;
+            temp += Time.deltaTime;
+            if(temp > .3f)
+            {
+                temp = 0f;
+                if (open)
+                {
+                    foreach (var item in meshRenderers)
+                    {
+                        foreach (var material in item.materials)
+                        {
+                            material.color = new Color(material.color.r, material.color.g, material.color.b, 0);
+
+                        }
+                    }
+                    open = false;
+                }
+                else
+                {
+                    foreach (var item in meshRenderers)
+                    {
+                        foreach (var material in item.materials)
+                        {
+                            material.color = new Color(material.color.r, material.color.g, material.color.b, 255);
+
+                        }
+                    }
+                    open = true;
+                }
+            }
+        }
+        foreach (var item in meshRenderers)
+        {
+            foreach (var material in item.materials)
+            {
+                material.color = new Color(material.color.r, material.color.g, material.color.b, 255);
+
+            }
+        }
+
+    }
+
 }

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-[CreateAssetMenu(menuName ="SelectedCar")]
+[CreateAssetMenu(menuName = "Data/SelectedCar")]
 public class SelectedCar : ScriptableObject
 {
     public int selectedCar;

@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Speed
   - Fire
+  - Obstacle
+  - Object
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -13,9 +16,9 @@ TagManager:
   - Ground
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Speed
+  - Untouchable
+  - Obstacle
   - 
   - 
   - 

@@ -7,7 +7,6 @@ public class Collect : MonoBehaviour
     [SerializeField] private int _gold;
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other);
         if(other.gameObject.tag == "Player")
         {
             CollectItem();
@@ -18,5 +17,4 @@ public class Collect : MonoBehaviour
         GameManager.instance.SetGold(_gold);
         Destroy(this.gameObject);
     }
-        
 }

@@ -1,19 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour , IDataPersistence
 {
-    [SerializeField] private SelectedCar selectedCar;
-    [SerializeField] private GameObject startTouch;
-    public bool isStart;
+    
     public static GameManager instance;
     [SerializeField] private TextMeshProUGUI _goldText;
     [SerializeField] private int _gold;
-    [SerializeField] private GameObject[] cars;
+    
     private void Awake()
     {
-        GameManager[] managers = GameObject.FindObjectsOfType<GameManager>();
+        GameManager[] managers = FindObjectsOfType<GameManager>();
 
         if (managers.Length > 1)
         {
@@ -22,16 +21,10 @@ public class GameManager : MonoBehaviour
 
         DontDestroyOnLoad(this.gameObject);
         instance = this;
-        Instantiate(cars[selectedCar.selectedCar], transform.position, Quaternion.identity);
     }
-
-    private void Update()
+    private void Start()
     {
-        if(Input.GetMouseButton(0))
-        {
-            isStart = true;
-            startTouch.SetActive(false);
-        }
+        SetGold(0);
     }
     public int GetGold()
     {
@@ -41,5 +34,16 @@ public class GameManager : MonoBehaviour
     {
         _gold += gold;
         _goldText.text = _gold.ToString();
+    }
+
+    public void LoadData(GameData data)
+    {
+        _gold = data.gold;
+        Debug.Log("gold" + _gold);
+    }
+
+    public void SaveData(GameData data)
+    {
+        data.gold = _gold;
     }
 }
