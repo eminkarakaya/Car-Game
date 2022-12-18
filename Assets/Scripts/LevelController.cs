@@ -5,9 +5,19 @@ using UnityEngine.SceneManagement;
 
 public class LevelController : MonoBehaviour
 {
+    public static event System.Action OnStart;
     [SerializeField] private LevelData levelData;
     [SerializeField] private GameObject startTouch, tapToPlay;
-    public bool isStart;
+    private bool _isStart;
+    public bool isStart { get => _isStart;
+        set 
+        {
+            var old = _isStart;
+            _isStart = value;
+            if(_isStart != old && _isStart)
+                OnStart?.Invoke();
+        }
+    }
     [SerializeField] private GameObject[] cars;
     [SerializeField] private SelectedCar selectedCar;
     [SerializeField] private GameObject finishMenu;

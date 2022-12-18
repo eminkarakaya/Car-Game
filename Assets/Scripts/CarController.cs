@@ -3,6 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 public class CarController : MonoBehaviour
 {
+    public static event System.Action OnFall;
+    private bool _isGrounded;
+    public bool isGrounded { get => _isGrounded ; set 
+        {
+            var old = _isGrounded;
+            _isGrounded = value;
+            if(_isGrounded != old && _isGrounded && TryGetComponent(out PlayerInput playerInput))
+            {
+                OnFall?.Invoke();
+            }
+        }
+    }
+    private RaycastHit hit;
+    [SerializeField] private float rayLenght;
     [SerializeField] private Transform _backOfCar;
     MeshRenderer [] meshRenderers;
     public bool isFinish;
@@ -15,7 +29,8 @@ public class CarController : MonoBehaviour
     [SerializeField] private int unTouchableLayerIndex, defaultLayerIndex;
     [SerializeField] private LayerMask layer;
     [SerializeField] CarData data;
-    [SerializeField] private float maxSpeed,rotationMultiplier, speed,rayLength,reviveDistance,reviveDuration,unTouchableDuration;
+    [SerializeField] private float maxSpeed,rotationMultiplier, speed,rayLength,reviveDistance,reviveDuration
+        ,unTouchableDuration,horizontalSpeed;
     Rigidbody rb;
     public float horizontalData;
     private void Awake()
@@ -28,41 +43,64 @@ public class CarController : MonoBehaviour
         levelController = FindObjectOfType<LevelController>();
         meshRenderers = GetComponentsInChildren<MeshRenderer>();
         rb = GetComponent<Rigidbody>();
-        maxSpeed = data.maxSpeed;
+        //maxSpeed = data.maxSpeed;
     }
-    
+    private void Update()
+    {
+        if(Physics.Raycast(transform.position,Vector3.down,out hit,rayLength,layer))
+        {
+            if(hit.collider != null)
+                isGrounded = true;
+        }
+        else
+            isGrounded = false;
+    }
     private void FixedUpdate()
     {
         if (!levelController.isStart || isFinish)
             return;
+        if (!isGrounded)
+        {
+            rb.AddForce(Physics.gravity*2,ForceMode.Acceleration);
+        }
+
         HorizontalMove();
        
-        rb.velocity = new Vector3(0, rb.velocity.y, rb.velocity.z);
+        //rb.velocity = new Vector3(0, rb.velocity.y, rb.velocity.z);
         
         if (rb.velocity.z < maxSpeed)
         {
-            rb.velocity += new Vector3(0, 0, Time.deltaTime * data.accelerationSpeed);
+            rb.velocity += new Vector3(rb.velocity.x, 0, Time.deltaTime * data.accelerationSpeed*2);
         }
         else
         {
             if (rb.velocity.z > 0)
             {
-                rb.velocity -= new Vector3(0, 0, Time.deltaTime * data.accelerationSpeed);
+                rb.velocity -= new Vector3(rb.velocity.x, 0, Time.deltaTime * data.accelerationSpeed);
             }
         }
-        rb.angularVelocity = Vector3.zero;
+        Vector3 rby = rb.angularVelocity;
+        rby.y = 0;
+
+        rb.angularVelocity = rby;
     }
     public void HorizontalMove()
     {
         Vector3 rot = Vector3.forward * rotationMultiplier * (rb.velocity.z / maxSpeed) * horizontalData;
-        transform.rotation = Quaternion.Euler(rot);
-        transform.Translate(Vector3.right * Time.deltaTime * data.horizontalSpeed * (rb.velocity.z / maxSpeed) * horizontalData * 1.3f);
+        Vector3 temp = transform.rotation.eulerAngles;
+        temp.z = rot.z;
+        transform.rotation = Quaternion.Euler(temp);
+
+        rb.velocity = new Vector3(horizontalSpeed * horizontalData, rb.velocity.y,rb.velocity.z);
+        
+
+        //transform.Translate(Vector3.right * Time.deltaTime * data.horizontalSpeed * (rb.velocity.z / maxSpeed) * horizontalData * 1.3f);
     }
     private IEnumerator Revive()
     {
         if(!kazaYaptiMi)
         {
-                kazaYaptiMi = true;
+            kazaYaptiMi = true;
             //rb.velocity = Vector3.zero;
             Vector3 revivePos = transform.position + Vector3.back * reviveDistance;
             yield return new WaitForSeconds(reviveDuration);
@@ -76,7 +114,7 @@ public class CarController : MonoBehaviour
     {
         if(!dokunulmazMi)
         {
-            rb.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationX;
+            //rb.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationX;
             
             StartCoroutine(MaterialToggle());
             dokunulmazMi = true;
@@ -91,7 +129,7 @@ public class CarController : MonoBehaviour
         if(other.gameObject.tag == "Obstacle")
         {
             //CrashEffect2(other.transform);
-            CrashEffect();
+            //CrashEffect();
             StartCoroutine(Revive());
         }
         if(other.gameObject.tag == "Speed")
@@ -121,7 +159,7 @@ public class CarController : MonoBehaviour
     }
     void CrashEffect()
     {
-        rb.constraints = RigidbodyConstraints.None;
+        //rb.constraints = RigidbodyConstraints.None;
         rb.AddExplosionForce(1000 * rb.velocity.z,_backOfCar.position,.3f);
         
     }
@@ -177,4 +215,8 @@ public class CarController : MonoBehaviour
 
     }
 
+    void ClampRotation()
+    {
+        Debug.Log(transform.rotation + " " + transform.rotation.eulerAngles);
+    }
 }

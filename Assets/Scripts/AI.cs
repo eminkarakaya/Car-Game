@@ -46,7 +46,6 @@ public class AI : MonoBehaviour
     IEnumerator Move()
     {
         var temp = Random.Range(moveDurMinMax.x, moveDurMinMax.y);
-        Debug.Log(temp + " temp");
         
         var dir = Direction();
         while(temp > 0)
@@ -57,13 +56,11 @@ public class AI : MonoBehaviour
         }
         duration = Random.Range(moveFrequencyMinMax.x, moveFrequencyMinMax.y);
         car.horizontalData = 0;
-        Debug.Log(duration + " dur");
     }
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.tag == "Wall")
         {
-            Debug.Log("wall");
             StopAllCoroutines();
             StartCoroutine(Move());
         }

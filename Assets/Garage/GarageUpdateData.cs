@@ -16,10 +16,11 @@ public class GarageUpdateData : MonoBehaviour
     //
     [SerializeField] private LevelData levelData;
     [Header("UI")]
+    
     [SerializeField] private TextMeshProUGUI carNameText;
     [SerializeField] private Slider speedSlider, boostedSpeedSlider, horizontalSpeedSlider, accelerationSpeedSlider;
     [SerializeField] private GameObject selectedImage,lockImage;
-    [SerializeField] private GameObject selectButton, goButton, buyButton;
+    [SerializeField] private GameObject selectButton, goButton, buyButton,rightArrow,leftArrow;
 
     [Header("UI Data")]
     [SerializeField] private float speedMaxValue;
@@ -65,6 +66,7 @@ public class GarageUpdateData : MonoBehaviour
             goButton.SetActive(false);
             selectedImage.SetActive(false);
         }
+        CheckArrow();
     }
     private void Update()
     {
@@ -132,9 +134,10 @@ public class GarageUpdateData : MonoBehaviour
     }
     private void Left()
     {
-        if(currentCar > 0)
+        if (currentCar > 0)
         {
             currentCar--;
+            CheckArrow();
             cameraAndLight.transform.DOMoveX(-currentCar * spaceBetweenCars, animationDuration);
             UpdateCarData();
             if(data[currentCar].isLocked)
@@ -147,13 +150,15 @@ public class GarageUpdateData : MonoBehaviour
             }
             CheckSelected();
         }
+        
     }
     private void Right()
     {
         if(currentCar < data.Length-1)
         {
-
+            
             currentCar++;
+            CheckArrow();
             cameraAndLight.transform.DOMoveX(-currentCar * spaceBetweenCars, animationDuration);
             UpdateCarData();
             if (data[currentCar].isLocked)
@@ -191,6 +196,20 @@ public class GarageUpdateData : MonoBehaviour
         lockData[currentCar].lockedObject.SetActive(false);
         lockImage.SetActive(false);
         CheckSelected();
+    }
+    void CheckArrow()
+    {
+        Debug.Log("check");
+        if (currentCar < data.Length - 1)
+        {
+            rightArrow.SetActive(true);
+        }
+        else rightArrow.SetActive(false);
+        if (currentCar > 0)
+        {
+            leftArrow.SetActive(true);
+        } else leftArrow.SetActive(false);
+
     }
 }
 [System.Serializable] 
