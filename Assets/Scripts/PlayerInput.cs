@@ -4,16 +4,14 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
-    [SerializeField] private float sensitivity;
+   
     CarController car;
-    float data;
     private void Start()
     {
         car = GetComponent<CarController>();
         
     }
- 
-    private void FixedUpdate()
+    private void Update()
     {
         if (Input.touchCount > 0)
         {
@@ -21,16 +19,11 @@ public class PlayerInput : MonoBehaviour
             if (touch.phase == TouchPhase.Began)
             {
                 car.SpecialFinish();
+
             }
-            if (touch.phase == TouchPhase.Moved )
+            if (touch.phase == TouchPhase.Moved)
             {
-                data = touch.deltaPosition.normalized.x;
-                
-                //if (data > 1)
-                //    data = 1;
-                //if (data < -1)
-                //    data = -1;
-                car.horizontalData = data;
+                car.horizontalData = touch.deltaPosition.normalized.x;
             }
             else
             {

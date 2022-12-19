@@ -14,10 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isLocked: 1
   carName: car2
-  maxSpeed: 20
+  maxSpeed: 40
   boostedMaxSpeed: 50
-  accelerationSpeed: 20
-  decelerationSpeed: 10
+  accelerationSpeed: 5
+  decelerationSpeed: 5
   horizontalSpeed: 12
   boostDuration: 2
-  cost: 700

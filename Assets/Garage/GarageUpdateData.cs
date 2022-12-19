@@ -20,8 +20,7 @@ public class GarageUpdateData : MonoBehaviour
     [SerializeField] private TextMeshProUGUI carNameText;
     [SerializeField] private Slider speedSlider, boostedSpeedSlider, horizontalSpeedSlider, accelerationSpeedSlider;
     [SerializeField] private GameObject selectedImage,lockImage;
-    [SerializeField] private GameObject selectButton, goButton, buyButton,rightArrow,leftArrow,costImageText;
-    [SerializeField] private TextMeshProUGUI costText;
+    [SerializeField] private GameObject selectButton, goButton, buyButton,rightArrow,leftArrow;
 
     [Header("UI Data")]
     [SerializeField] private float speedMaxValue;
@@ -68,8 +67,6 @@ public class GarageUpdateData : MonoBehaviour
             selectedImage.SetActive(false);
         }
         CheckArrow();
-        CheckGold();
-        CheckLock();
     }
     private void Update()
     {
@@ -114,7 +111,7 @@ public class GarageUpdateData : MonoBehaviour
     }
     public void CheckLock()
     {
-        if(data[currentCar].isLocked)
+        if(!data[currentCar].isLocked)
         {
             lockImage.SetActive(true);
         }
@@ -140,9 +137,7 @@ public class GarageUpdateData : MonoBehaviour
         if (currentCar > 0)
         {
             currentCar--;
-            CheckGold();
             CheckArrow();
-            CheckLock();
             cameraAndLight.transform.DOMoveX(-currentCar * spaceBetweenCars, animationDuration);
             UpdateCarData();
             if(data[currentCar].isLocked)
@@ -166,8 +161,6 @@ public class GarageUpdateData : MonoBehaviour
             CheckArrow();
             cameraAndLight.transform.DOMoveX(-currentCar * spaceBetweenCars, animationDuration);
             UpdateCarData();
-            CheckGold();
-            CheckLock();
             if (data[currentCar].isLocked)
             {
                 buyButton.SetActive(true);
@@ -198,9 +191,6 @@ public class GarageUpdateData : MonoBehaviour
     }
     public void Unlock()
     {
-        if (data[currentCar].cost > GameManager.instance.GetGold())
-            return;
-        GameManager.instance.SetGold(data[currentCar].cost);
         data[currentCar].isLocked = false;
         lockData[currentCar].unlockedObject.SetActive(true);
         lockData[currentCar].lockedObject.SetActive(false);
@@ -220,31 +210,6 @@ public class GarageUpdateData : MonoBehaviour
             leftArrow.SetActive(true);
         } else leftArrow.SetActive(false);
 
-    }
-    public void CheckGold()
-    {
-        if(!data[currentCar].isLocked)
-        {
-            buyButton.SetActive(false);
-            costImageText.SetActive(false);
-            return;
-        }
-        else
-        {
-            buyButton.SetActive(true);
-            costImageText.SetActive(true);
-            costText.text = data[currentCar].cost.ToString();
-        }
-        if(data[currentCar].cost > GameManager.instance.GetGold())
-        {
-            buyButton.GetComponent<Image>().color= Color.gray;
-            costText.color = Color.red;
-        }
-        else
-        {
-            buyButton.GetComponent<Image>().color = Color.green;
-            costText.color = Color.black;
-        }
     }
 }
 [System.Serializable] 
