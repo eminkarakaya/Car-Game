@@ -10,6 +10,8 @@ TagManager:
   - Object
   - Wall
   - Ground
+  - Trap
+  - Wheel
   layers:
   - Default
   - TransparentFX

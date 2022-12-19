@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c318adb5a865af9498f933b653d0b332, type: 3}
   m_Name: Car1
   m_EditorClassIdentifier: 
-  isLocked: 1
+  isLocked: 0
   carName: car1
   maxSpeed: 30
-  boostedMaxSpeed: 50
+  boostedMaxSpeed: 70
   accelerationSpeed: 20
   decelerationSpeed: 10
   horizontalSpeed: 10
   boostDuration: 2
+  cost: 100

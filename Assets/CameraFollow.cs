@@ -34,7 +34,8 @@ public class CameraFollow : MonoBehaviour
     void Follow()
     {
         if(!CarController.instance.isFinish)
-            transform.position = Vector3.Lerp(transform.position, followObject.transform.position + offset, .1f);
+            transform.position = Vector3.Lerp(new Vector3(0, transform.position.y, transform.position.z), new Vector3(0, followObject.transform.position.y, followObject.transform.position.z) + offset, 1f);
+            //transform.position = Vector3.Lerp(transform.position, followObject.transform.position + offset, 1f);
     }
     void CameraShake()
     {
@@ -49,6 +50,7 @@ public class CameraFollow : MonoBehaviour
         {
             isStart = true;
             transform.SetParent(null);
+            transform.rotation = Quaternion.Euler(rot);
         });
     }
 }

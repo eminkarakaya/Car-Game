@@ -2,29 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using System.Linq;
 public class LevelController : MonoBehaviour
 {
+
     public static event System.Action OnStart;
     [SerializeField] private LevelData levelData;
     [SerializeField] private GameObject startTouch, tapToPlay;
     private bool _isStart;
     public bool isStart { get => _isStart;
-        set 
+        set
         {
             var old = _isStart;
             _isStart = value;
-            if(_isStart != old && _isStart)
+            if (_isStart != old && _isStart)
                 OnStart?.Invoke();
         }
     }
     [SerializeField] private GameObject[] cars;
+    [SerializeField] private CarController[] carsInGame;
+    public List<float> carsList;
     [SerializeField] private SelectedCar selectedCar;
     [SerializeField] private GameObject finishMenu;
 
     private void Awake()
     {
         var obj = Instantiate(cars[selectedCar.selectedCar], Vector3.up, Quaternion.identity);
+    }
+    private void Start()
+    {
+        carsInGame = FindObjectsOfType<CarController>();
+        //carsList = carsInGame.Select(x => x.transform.position.z).ToList();
+        
     }
     private void OnEnable()
     {
@@ -36,6 +45,9 @@ public class LevelController : MonoBehaviour
     }
     private void Update()
     {
+        
+        ArabaSiralamasi();
+        
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
@@ -45,6 +57,20 @@ public class LevelController : MonoBehaviour
                 startTouch.SetActive(false);
                 tapToPlay.SetActive(false);
             }
+        }
+    }
+    private void ArabaSiralamasi()
+    {
+        carsList = carsInGame.Select(x => x.transform.position.z).ToList();
+        //for (int i = 0; i < carsInGame.Length; i++)
+        //{
+
+        //}
+        carsInGame = Sirala(carsList.ToArray(),carsInGame.ToArray());
+        System.Array.Reverse(carsInGame);
+        for (int i = 0; i < carsInGame.Length; i++)
+        {
+            carsInGame[i].numberOf = i;
         }
     }
     public void StopBtn()
@@ -78,5 +104,38 @@ public class LevelController : MonoBehaviour
     void Finish()
     {
         finishMenu.SetActive(true);
+    }
+    void Swap(float x, float y)
+    {
+        float temp;
+        temp = x;
+        x = y;
+        y = temp;
+    }
+    public CarController [] Sirala(float [] arr,CarController [] carcontroller)
+    {
+        int min;
+        for (int i = 0; i < arr.Length; i++)
+        {
+            min = i;
+            for (int j = i+1 ; j < arr.Length ; j++)
+            {
+                if(arr[min] > arr[j])
+                {
+                    min = j;
+                }
+            }
+            CarController temp2;
+            temp2 = carcontroller[i];
+            carcontroller[i] = carcontroller[min];
+            carcontroller[min] = temp2;
+
+            float temp;
+            temp = arr[i];
+            arr[i] = arr[min];
+            arr[min] = temp;
+            //Swap(arr[min], i);
+        }
+        return carcontroller;
     }
 }

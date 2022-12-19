@@ -273,10 +273,13 @@ public class CarController : MonoBehaviour
 
         //}
     }
+<<<<<<< Updated upstream
     private void OnDrawGizmos()
     {
         //Gizmos.DrawSphere()
     }
+=======
+>>>>>>> Stashed changes
     void TextParse()
     {
         if(numberOf+1 == 1)

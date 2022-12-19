@@ -47,12 +47,13 @@ MonoBehaviour:
   levelData: {fileID: 11400000, guid: 649253d600e73f34ea652a282f9d7ff2, type: 2}
   startTouch: {fileID: 0}
   tapToPlay: {fileID: 0}
-  isStart: 0
   cars:
   - {fileID: 4145997255902619074, guid: 93a815319c29cd24e86408c4b91191fd, type: 3}
   - {fileID: 7644360707672163555, guid: f430073c636116b4b9c0f5e6ddcde097, type: 3}
   - {fileID: 33538749733570355, guid: 98c57f100a7d7684dba02b8725bbc5d8, type: 3}
   - {fileID: 6183048251904429594, guid: a82f70a5f0178974093910fc6fd84c38, type: 3}
   - {fileID: 1248598967819147742, guid: c4cad50aa03bbca42938fe318344950b, type: 3}
+  carsInGame: []
+  carsList: []
   selectedCar: {fileID: 11400000, guid: 86a893c09591b264d99e8d530415cdda, type: 2}
   finishMenu: {fileID: 0}
