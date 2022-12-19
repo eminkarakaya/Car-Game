@@ -6,6 +6,8 @@ public class CarController : MonoBehaviour
 {
     public static event System.Action OnFall;
     [SerializeField] private bool _isGrounded;
+    [SerializeField] private List<Transform> wheels;
+    [SerializeField] private ParticleSystem wheelEffect;
     public bool isGrounded { get => _isGrounded ; set 
         {
             var old = _isGrounded;
@@ -35,6 +37,7 @@ public class CarController : MonoBehaviour
     Rigidbody rb;
     public float horizontalData;
     [SerializeField] private TextMeshProUGUI numberOfText;
+    private List<GameObject> wheelParticles = new List<GameObject>();
     public int numberOf;
     Vector3 oldColliderSize;
     private void Awake()
@@ -261,12 +264,22 @@ public class CarController : MonoBehaviour
     }
     void WheelBurst()
     {
+        for (int i = 0; i < wheels.Count; i++)
+        {
+            var particle = Instantiate(wheelEffect.gameObject, wheels[i].transform.position, Quaternion.identity, this.transform);
+            wheelParticles.Add(particle);
+        }
         maxSpeed = maxSpeed / 2;
         Vector3 colliderSize = new Vector3(boxCollider.bounds.size.x, boxCollider.bounds.size.y - .5f, boxCollider.bounds.size.z);
         boxCollider.size = colliderSize;
     }
     void FixWheel()
     {
+        for (int i = 0; i < wheelParticles.Count; i++)
+        {
+            Destroy(wheelParticles[i]);
+        }
+        wheelParticles.Clear();
         maxSpeed = data.maxSpeed;
         boxCollider.size = oldColliderSize;
     }
@@ -308,4 +321,5 @@ public class CarController : MonoBehaviour
 
         }
     }
+
 }
