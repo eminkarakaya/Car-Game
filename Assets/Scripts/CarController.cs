@@ -18,7 +18,6 @@ public class CarController : MonoBehaviour
     }
     [SerializeField] private BoxCollider boxCollider;
     private RaycastHit hit;
-    [SerializeField] private float rayLenght;
     [SerializeField] private Transform _backOfCar;
     MeshRenderer [] meshRenderers;
     public bool isFinish;
@@ -51,16 +50,26 @@ public class CarController : MonoBehaviour
         meshRenderers = GetComponentsInChildren<MeshRenderer>();
         rb = GetComponent<Rigidbody>();
     }
+    
     private void Update()
     {
+        Debug.DrawRay(transform.position, Vector3.down * rayLength,Color.blue);
         TextParse();
+        //Debug.DrawRay(Vector3.zero, Vector3.down * rayLenght,Color.red);
         if(Physics.Raycast(transform.position,Vector3.down,out hit,rayLength,layer))
         {
             if(hit.collider != null)
+            {
                 isGrounded = true;
+            }
         }
         else
             isGrounded = false;
+    }
+    private void OnDrawGizmos()
+    {
+        //Gizmos.DrawRay(transform.position, Vector3.down * rayLenght);
+        //Debug.Log(rayLenght);
     }
     private void FixedUpdate()
     {
@@ -132,7 +141,6 @@ public class CarController : MonoBehaviour
             Collider[] colliders = other.gameObject.GetComponentsInChildren<Collider>();
             foreach (var item in colliders)
             {
-                Debug.Log(item);
                 item.enabled = true;
                 if(item.TryGetComponent(out Rigidbody rb))
                 {
@@ -169,6 +177,10 @@ public class CarController : MonoBehaviour
         if(other.gameObject.tag == "Wheel")
         {
             FixWheel();
+        }
+        if(other.gameObject.tag == "Train")
+        {
+            
         }
     }
     public void SpecialFinish()
@@ -232,16 +244,16 @@ public class CarController : MonoBehaviour
 
     void ClampRotation()
     {
-        if(transform.rotation.eulerAngles.x < 340 && transform.rotation.eulerAngles.x > 180)
+        if (transform.rotation.eulerAngles.x < 340 && transform.rotation.eulerAngles.x > 180)
         {
-            transform.rotation = Quaternion.Euler(-20, transform.rotation.y, transform.rotation.z);
+            transform.rotation = Quaternion.Euler(-15, transform.rotation.y, transform.rotation.z);
             Vector3 angX = rb.angularVelocity;
             angX.x = 0;
             rb.angularVelocity = angX;
         }
-        else if (transform.rotation.eulerAngles.x > 30 && transform.rotation.eulerAngles.x < 180)
+        else if (transform.rotation.eulerAngles.x >20 && transform.rotation.eulerAngles.x < 180)
         {
-            transform.rotation = Quaternion.Euler(25, transform.rotation.y, transform.rotation.z);
+            transform.rotation = Quaternion.Euler(15, transform.rotation.y, transform.rotation.z);
             Vector3 angX = rb.angularVelocity;
             angX.x = 0;
             rb.angularVelocity = angX;
@@ -273,10 +285,7 @@ public class CarController : MonoBehaviour
 
         //}
     }
-    private void OnDrawGizmos()
-    {
-        //Gizmos.DrawSphere()
-    }
+    
     void TextParse()
     {
         if(numberOf+1 == 1)

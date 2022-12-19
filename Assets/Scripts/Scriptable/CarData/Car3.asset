@@ -20,3 +20,4 @@ MonoBehaviour:
   decelerationSpeed: 5
   horizontalSpeed: 15
   boostDuration: 2
+  cost: 1000
