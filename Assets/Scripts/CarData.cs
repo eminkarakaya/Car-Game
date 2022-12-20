@@ -8,6 +8,5 @@ public class CarData : ScriptableObject
     public bool isLocked;
     public string carName;
     public float maxSpeed, boostedMaxSpeed, accelerationSpeed, decelerationSpeed, horizontalSpeed, boostDuration;
-
-    
+    public int cost;
 }

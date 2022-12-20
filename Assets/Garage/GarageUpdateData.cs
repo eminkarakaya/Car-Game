@@ -26,7 +26,7 @@ public class GarageUpdateData : MonoBehaviour
     [SerializeField] private float speedMaxValue;
     [SerializeField] private float boostedSpeedMaxValue, horizontalSpeedMaxValue, accelerationSpeedMaxValue;
     [Space(20)]
-
+    [SerializeField] private TextMeshProUGUI costText;
     [SerializeField] private SelectedCar selectedCar;
     [SerializeField] private float spaceBetweenCars;
     [SerializeField] private float animationDuration;
@@ -34,6 +34,8 @@ public class GarageUpdateData : MonoBehaviour
     [SerializeField] private CarData [] data;
     [SerializeField] private CarLockData[] lockData;
     [SerializeField] private int currentCar = 0;
+    [SerializeField] private GameObject costImageText;
+
     private void Start()
     {
         speedSlider.maxValue = speedMaxValue;
@@ -67,6 +69,8 @@ public class GarageUpdateData : MonoBehaviour
             selectedImage.SetActive(false);
         }
         CheckArrow();
+        CheckGold();
+        CheckLock();
     }
     private void Update()
     {
@@ -111,7 +115,7 @@ public class GarageUpdateData : MonoBehaviour
     }
     public void CheckLock()
     {
-        if(!data[currentCar].isLocked)
+        if(data[currentCar].isLocked)
         {
             lockImage.SetActive(true);
         }
@@ -138,6 +142,8 @@ public class GarageUpdateData : MonoBehaviour
         {
             currentCar--;
             CheckArrow();
+            CheckGold();
+            CheckLock();
             cameraAndLight.transform.DOMoveX(-currentCar * spaceBetweenCars, animationDuration);
             UpdateCarData();
             if(data[currentCar].isLocked)
@@ -150,15 +156,16 @@ public class GarageUpdateData : MonoBehaviour
             }
             CheckSelected();
         }
-        
     }
     private void Right()
     {
         if(currentCar < data.Length-1)
         {
-            
             currentCar++;
             CheckArrow();
+            CheckGold();
+            CheckLock();
+
             cameraAndLight.transform.DOMoveX(-currentCar * spaceBetweenCars, animationDuration);
             UpdateCarData();
             if (data[currentCar].isLocked)
@@ -191,15 +198,19 @@ public class GarageUpdateData : MonoBehaviour
     }
     public void Unlock()
     {
+        if (data[currentCar].cost > GameManager.instance.GetGold())
+            return;
+        GameManager.instance.SetGold(data[currentCar].cost);
         data[currentCar].isLocked = false;
         lockData[currentCar].unlockedObject.SetActive(true);
         lockData[currentCar].lockedObject.SetActive(false);
         lockImage.SetActive(false);
         CheckSelected();
+        CheckLock();
+        CheckGold();
     }
     void CheckArrow()
     {
-        Debug.Log("check");
         if (currentCar < data.Length - 1)
         {
             rightArrow.SetActive(true);
@@ -209,11 +220,36 @@ public class GarageUpdateData : MonoBehaviour
         {
             leftArrow.SetActive(true);
         } else leftArrow.SetActive(false);
+    }
+    public void CheckGold()
+    {
+        if (!data[currentCar].isLocked)
+        {
+            buyButton.SetActive(false);
+            costImageText.SetActive(false);
+            return;
+        }
+        else
+        {
+            buyButton.SetActive(true);
+            costImageText.SetActive(true);
+            costText.text = data[currentCar].cost.ToString();
+        }
+        if (data[currentCar].cost > GameManager.instance.GetGold())
+        {
+            buyButton.GetComponent<Image>().color = Color.gray;
+            costText.color = Color.red;
+        }
+        else
+        {
+            buyButton.GetComponent<Image>().color = Color.green;
+            costText.color = Color.black;
+        }
 
     }
-}
 [System.Serializable] 
 public struct CarLockData
 {
     public GameObject unlockedObject, lockedObject;
+}
 }

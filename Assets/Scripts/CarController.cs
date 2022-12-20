@@ -20,7 +20,6 @@ public class CarController : MonoBehaviour
     }
     [SerializeField] private BoxCollider boxCollider;
     private RaycastHit hit;
-    [SerializeField] private Transform _backOfCar;
     MeshRenderer [] meshRenderers;
     public bool isFinish;
     public static CarController instance;
@@ -289,14 +288,18 @@ public class CarController : MonoBehaviour
         other.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = false;
         other.transform.GetChild(2).GetComponent<MeshRenderer>().enabled = false;
         other.transform.GetChild(0).gameObject.SetActive(true);
-        
-        other.transform.GetChild(0).GetComponent<Rigidbody>().AddExplosionForce(100, other.transform.GetChild(0).transform.position, 10f);
 
-        //Collider[] colliders = rb.transform.GetChild(0).GetComponentsInChildren<Collider>();
-        //foreach (var item in colliders)
-        //{
-
-        //}
+        Collider[] colliders = other.transform.GetChild(0).GetComponentsInChildren<Collider>();
+        foreach (var item in colliders)
+        {
+            item.enabled = true;
+            if(item.TryGetComponent(out Rigidbody _rb))
+            {
+                _rb.isKinematic = false;
+                _rb.useGravity = true;
+            }
+            _rb.AddForce((other.transform.position - transform.position),ForceMode.Impulse);
+        }
     }
     
     void TextParse()

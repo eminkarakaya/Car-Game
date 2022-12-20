@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Collect : MonoBehaviour
 {
-    [SerializeField] private int _gold;
+    bool isCollected;
+    [SerializeField] private bool fuel;
+    [SerializeField] private int _value;
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.tag == "Player")
@@ -14,7 +16,21 @@ public class Collect : MonoBehaviour
     }
     private void CollectItem()
     {
-        GameManager.instance.SetGold(_gold);
+        Debug.Log(_value);
+        if(fuel)
+        {
+            if (isCollected)
+                return;
+            isCollected = true;
+            GameManager.instance.SetFuel(_value);
+        }    
+        else
+        {
+            if (isCollected)
+                return;
+            isCollected = true;
+            GameManager.instance.SetGold(_value);
+        }
         Destroy(this.gameObject);
     }
 }

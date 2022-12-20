@@ -16,7 +16,6 @@ public class DataPersistenceManager : MonoBehaviour
         this.dataHandler = new FileDataHandler(Application.persistentDataPath, fileName);
         this.dataPersistenceObjects = FindAllIDataPersistenceObjects();
         LoadGame();
-        Debug.Log("loaded");
     }
     void Awake()
     {
