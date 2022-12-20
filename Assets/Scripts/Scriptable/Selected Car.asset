@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23665904f6d08da40ad620302640970e, type: 3}
   m_Name: Selected Car
   m_EditorClassIdentifier: 
-  selectedCar: 0
+  selectedCar: 1

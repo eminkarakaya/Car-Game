@@ -7,6 +7,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 874905278, guid: c4cad50aa03bbca42938fe318344950b, type: 3}
+      propertyPath: unTouchableDuration
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 874905280, guid: c4cad50aa03bbca42938fe318344950b, type: 3}
       propertyPath: m_Size.y
       value: 1.255507
@@ -17,7 +21,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1248598967819147742, guid: c4cad50aa03bbca42938fe318344950b, type: 3}
       propertyPath: m_Name
-      value: Free Racing Car Variant
+      value: LV2CAR
       objectReference: {fileID: 0}
     - target: {fileID: 1880317207959290724, guid: c4cad50aa03bbca42938fe318344950b, type: 3}
       propertyPath: m_RootOrder

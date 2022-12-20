@@ -50,6 +50,7 @@ public class CarController : MonoBehaviour
         oldColliderSize = boxCollider.size;
         levelController = FindObjectOfType<LevelController>();
         meshRenderers = GetComponentsInChildren<MeshRenderer>();
+        
         rb = GetComponent<Rigidbody>();
     }
     
@@ -180,10 +181,6 @@ public class CarController : MonoBehaviour
         {
             FixWheel();
         }
-        if(other.gameObject.tag == "Train")
-        {
-            
-        }
     }
     public void SpecialFinish()
     {
@@ -213,6 +210,7 @@ public class CarController : MonoBehaviour
                     {
                         foreach (var material in item.materials)
                         {
+                            Debug.Log(material);
                             material.color = new Color(material.color.r, material.color.g, material.color.b, 0);
 
                         }

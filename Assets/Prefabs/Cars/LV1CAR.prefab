@@ -381,6 +381,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 874905278, guid: c4cad50aa03bbca42938fe318344950b, type: 3}
+      propertyPath: unTouchableDuration
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 874905278, guid: c4cad50aa03bbca42938fe318344950b, type: 3}
       propertyPath: wheels.Array.data[0]
       value: 
       objectReference: {fileID: 736326887462798090}
@@ -388,6 +392,10 @@ PrefabInstance:
       propertyPath: wheels.Array.data[1]
       value: 
       objectReference: {fileID: 2389566032198956249}
+    - target: {fileID: 874905278, guid: c4cad50aa03bbca42938fe318344950b, type: 3}
+      propertyPath: unTouchableLayerIndex
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 874905279, guid: c4cad50aa03bbca42938fe318344950b, type: 3}
       propertyPath: m_Size.x
       value: 2.3
