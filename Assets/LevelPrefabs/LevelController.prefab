@@ -53,5 +53,6 @@ MonoBehaviour:
   cars:
   - {fileID: 3286831652488641839, guid: a3ec6e4ac219f1140b3c44dff25eaa65, type: 3}
   - {fileID: 4145997255902619074, guid: 93a815319c29cd24e86408c4b91191fd, type: 3}
+  - {fileID: 524379455370562147, guid: eb263f171ab187f4d8e9359d5f86baf9, type: 3}
   selectedCar: {fileID: 11400000, guid: 86a893c09591b264d99e8d530415cdda, type: 2}
   finishMenu: {fileID: 0}

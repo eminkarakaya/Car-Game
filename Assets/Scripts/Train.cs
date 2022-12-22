@@ -9,7 +9,7 @@ public class Train : MonoBehaviour
     private void Update()
     {
         if(isTrigger)
-            transform.Translate(transform.right * _speed * Time.deltaTime);
+            transform.Translate(-transform.right * _speed * Time.deltaTime);
         
     }
 }
